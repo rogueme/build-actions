@@ -65,6 +65,8 @@ export auto_kernel="true"
 export rootfs_size="512/2560"
 export kernel_usage="stable"
 
+# 添加软件包
+git clone https://github.com/tty228/luci-app-wechatpush.git package/wechatpush
 
 # 修改插件名字
 grep -rl '"终端"' . | xargs -r sed -i 's?"终端"?"TTYD"?g'
