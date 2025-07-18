@@ -1,5 +1,5 @@
 #
-# 请大家记住拉取的是我的 rogueme/build-actions 仓库，拉取的是其他仓库有问题，别问我，我也不清楚什么问题
+# 请大家记住拉取的是我的 281677160/build-actions 仓库，拉取的是其他仓库有问题，别问我，我也不清楚什么问题
 #
 # 因为SSH连接配置固件直接编译，会给github停止编译的,所以要另外触发启动编译程序
 #
@@ -26,11 +26,12 @@ on:
       CONFIG_FILE:
         description: '请选择[seed文件夹内]的配置文件'
         required: true
-        default: 'cmcc-rax3000m-emmc'
+        default: '360-t7-108M'
         type: choice
         options:
           - '360-t7-108M'
           - 'clt-r30b1-112M'
+          - 'cudy_tr3000-v1'
           - 'cmcc-rax3000m-emmc'
           - 'cmcc_rax3000me'
           - 'glinet-gl-xe3000'
@@ -48,7 +49,7 @@ on:
       KEEP_WORKFLOWS:
         description: '清理workflows,保留[X]个runs不被清理'
         required: true
-        default: '30'
+        default: '50'
       KEEP_RELEASES:
         description: '清理Releases,保留[X]个Releases不被清理'
         required: true
@@ -66,7 +67,7 @@ on:
       UPLOAD_RELEASE:
         description: '发布固件到 Github Releases'
         required: false
-        default: 'true'
+        default: 'false'
         type: boolean
       CACHEWRTBUILD_SWITCH:
         description: '缓存加速编译'
@@ -113,15 +114,14 @@ jobs:
       uses: actions/checkout@v4
       
     - name: 检测密匙/文件/版本
-      uses: rogueme/common@mishi
+      uses: 281677160/common@mishi
 
     - name: 部署编译环境
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo -E apt-get -qq update -y
-        sudo -E apt-get -qq install -y gawk git gettext libssl-dev xsltproc zip git-core wget curl grep python2.7 python3 python3-pip libpython3-dev snapd
-        sudo snap install jq
+        sudo -E apt-get -qq install -y gawk git gettext libssl-dev xsltproc zip git-core wget curl grep python2.7 python3 python3-pip libpython3-dev
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /${{ env.DIY_WORK }}
         sudo chown $USER:$GROUPS /${{ env.DIY_WORK }}
@@ -136,16 +136,16 @@ jobs:
     
     - name: 公告
       continue-on-error: true
-      uses: rogueme/common@message
+      uses: 281677160/common@message
  
     - name: 运行其他和SSH远程(make menuconfig)
       id: info
-      uses: rogueme/common@need
+      uses: 281677160/common@need
         
     - name: 编译信息
       continue-on-error: true
       if: env.COMPILATION_INFORMATION == 'true'
-      uses: rogueme/common@message
+      uses: 281677160/common@message
     
     - name: 清理releases和workflows
       continue-on-error: true
@@ -165,4 +165,4 @@ jobs:
         
     - name: 触发启动"${{ matrix.target }}"开始编译
       if: steps.info.outcome == 'success'
-      uses: rogueme/common@trigger
+      uses: 281677160/common@trigger
