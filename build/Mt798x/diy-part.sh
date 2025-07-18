@@ -68,6 +68,7 @@ export kernel_usage="stable"
 
 # 添加软件包
 git clone https://github.com/tty228/luci-app-wechatpush.git package/wechatpush
+git clone https://github.com/nikkinikki-org/OpenWrt-nikki.git package/nikki
 
 
 # 修改插件名字
