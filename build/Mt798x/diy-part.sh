@@ -70,6 +70,16 @@ git clone https://github.com/tty228/luci-app-wechatpush.git package/wechatpush
 git clone https://github.com/gdy666/luci-app-lucky.git package/lucky
 git clone https://github.com/nikkinikki-org/OpenWrt-nikki.git package/nikki
 
+# 修复 libxcrypt 编译错误：移除 -Werror 选项或添加忽略警告
+# 路径根据实际源码结构调整，通常为 feeds/packages/libs/libxcrypt/Makefile
+if [ -f "feeds/packages/libs/libxcrypt/Makefile" ]; then
+  # 方法1：直接移除所有 -Werror 选项
+  sed -i 's/-Werror//g' feeds/packages/libs/libxcrypt/Makefile
+  
+  # 方法2（更精确）：仅忽略 format-nonliteral 错误
+  # sed -i 's/CFLAGS += /CFLAGS += -Wno-error=format-nonliteral /g' feeds/packages/libs/libxcrypt/Makefile
+fi
+
 # 修改插件名字
 grep -rl '"终端"' . | xargs -r sed -i 's?"终端"?"TTYD"?g'
 grep -rl '"TTYD 终端"' . | xargs -r sed -i 's?"TTYD 终端"?"TTYD"?g'
