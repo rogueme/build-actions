@@ -1,10 +1,6 @@
 CONFIG_TARGET_mediatek=y
 CONFIG_TARGET_mediatek_filogic=y
-CONFIG_TARGET_MULTI_PROFILE=y  # 保留多设备模式（不影响单设备编译）
-# 关键：指定目标设备为 cmcc_rax3000m-emmc（符合OpenWRT规范的设备配置）
-CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cmcc_rax3000m-emmc=y
-# 设备专属软件包配置（为空表示使用通用包，与设备无关）
-CONFIG_TARGET_DEVICE_PACKAGES_mediatek_filogic_DEVICE_cmcc_rax3000m-emmc=""
+CONFIG_TARGET_mediatek_filogic_DEVICE_cmcc_rax3000m-emmc=y
 CONFIG_DEVEL=y
 CONFIG_TOOLCHAINOPTS=y
 CONFIG_BUSYBOX_CUSTOM=y
