@@ -70,15 +70,29 @@ git clone https://github.com/tty228/luci-app-wechatpush.git package/wechatpush
 git clone https://github.com/gdy666/luci-app-lucky.git package/lucky
 git clone https://github.com/nikkinikki-org/OpenWrt-nikki.git package/nikki
 
-# 修复 libxcrypt 编译错误：移除 -Werror 选项或添加忽略警告
-# 路径根据实际源码结构调整，通常为 feeds/packages/libs/libxcrypt/Makefile
-if [ -f "feeds/packages/libs/libxcrypt/Makefile" ]; then
-  # 方法1：直接移除所有 -Werror 选项
-  sed -i 's/-Werror//g' feeds/packages/libs/libxcrypt/Makefile
+# -------------------------- 修复 libxcrypt 编译错误 --------------------------
+# 目标：在 libxcrypt 的 Makefile 中添加 -Wno-error=format-nonliteral，忽略格式字符串错误
+LIBXCRYPT_MAKEFILE="feeds/packages/libs/libxcrypt/Makefile"
+
+if [ -f "$LIBXCRYPT_MAKEFILE" ]; then
+  echo "正在修改 libxcrypt Makefile，添加忽略错误参数..."
   
-  # 方法2（更精确）：仅忽略 format-nonliteral 错误
-  # sed -i 's/CFLAGS += /CFLAGS += -Wno-error=format-nonliteral /g' feeds/packages/libs/libxcrypt/Makefile
+  # 在 Package/libxcrypt 定义中添加 TARGET_CFLAGS，传递忽略错误的参数
+  # 查找 "define Package/libxcrypt" 后的行，插入 TARGET_CFLAGS
+  sed -i '/define Package\/libxcrypt/,/endef/ s/^  TITLE:=Extended crypt library/  TITLE:=Extended crypt library\n  TARGET_CFLAGS += -Wno-error=format-nonliteral/' "$LIBXCRYPT_MAKEFILE"
+  
+  # 验证修改是否成功
+  if grep -q "TARGET_CFLAGS += -Wno-error=format-nonliteral" "$LIBXCRYPT_MAKEFILE"; then
+    echo "libxcrypt Makefile 修改成功"
+  else
+    echo "警告：修改未生效，尝试备用方案（直接在 CONFIGURE_ARGS 中添加 CFLAGS）"
+    # 备用方案：在 CONFIGURE_ARGS 中传递 CFLAGS（覆盖 configure 自动添加的 -Werror）
+    sed -i '/CONFIGURE_ARGS +=/ s/$/ CFLAGS="-Wno-error=format-nonliteral"/' "$LIBXCRYPT_MAKEFILE"
+  fi
+else
+  echo "错误：未找到 libxcrypt Makefile（路径：$LIBXCRYPT_MAKEFILE）"
 fi
+# ----------------------------------------------------------------------------------
 
 # 修改插件名字
 grep -rl '"终端"' . | xargs -r sed -i 's?"终端"?"TTYD"?g'
